@@ -95,6 +95,24 @@ app.post('/api/v1/tours', (req, res) => {
   res.send('Done ');
 });
 
+// will send only the updated data.
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const queryString = req.params.id;
+  // if (req.params.id * 1 > tours.length) {
+  if (queryString * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID❌',
+    });
+  }
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: `ID ${queryString} was updated`,
+    },
+  });
+});
+
 // * 🖨 SERVER REALATED STUFF's
 const port = 3000;
 app.listen(port, () => {
