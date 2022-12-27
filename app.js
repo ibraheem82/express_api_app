@@ -1,7 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-unused-vars */
 /* eslint-disable prefer-object-spread */
-/* eslint-disable prettier/prettier */
 /* eslint-disable import/newline-after-import */
 const fs = require('fs');
 const express = require('express');
@@ -32,12 +31,28 @@ const tours = JSON.parse(
 );
 
 // * Route Handler
+// ! [Getting all tours]
 app.get('/api/v1/tours', (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
     data: {
       tours,
+    },
+  });
+});
+
+// [:id] is the parameter
+// [?] optional parameter.
+// ! [Getting single tour]
+app.get('/api/v1/tours/:id', (req, res) => {
+  console.log(req.params);
+  const id = req.params.id * 1;
+  const tour = tours.find((el) => el.id === id);
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
     },
   });
 });
