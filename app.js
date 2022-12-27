@@ -30,9 +30,7 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// * Route Handler
-// ! [Getting all tours]
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -40,12 +38,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
 
-// [:id] is the parameter
-// [?] optional parameter.
-// ! [Getting single tour]
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   console.log(req.params);
   const id = req.params.id * 1;
   const tour = tours.find((el) => el.id === id);
@@ -67,9 +62,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   // console.log(req.body);
 
   // get the last one, add 1 to the last one.
@@ -93,10 +88,9 @@ app.post('/api/v1/tours', (req, res) => {
     }
   );
   res.send('Done ');
-});
+};
 
-// will send only the updated data.
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   const queryString = req.params.id;
   // if (req.params.id * 1 > tours.length) {
   if (queryString * 1 > tours.length) {
@@ -111,7 +105,50 @@ app.patch('/api/v1/tours/:id', (req, res) => {
       tour: `ID ${queryString} was updated`,
     },
   });
-});
+};
+
+const deleteTour = (req, res) => {
+  const queryString = req.params.id;
+  // if (req.params.id * 1 > tours.length) {
+  if (queryString * 1 > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID❌',
+    });
+  }
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
+};
+// * Route Handlers
+// ! [Getting all tours]
+app.get('/api/v1/tours', getAllTours);
+
+// [:id] is the parameter
+// [?] optional parameter.
+// ! [Getting single tour]
+// * similar to the one below, meaning chaining.
+// app.get('/api/v1/tours/:id', getTour);
+
+// app.post('/api/v1/tours', createTour);
+
+// will send only the updated data.
+// * Patch method
+// app.patch('/api/v1/tours/:id', updateTour);
+
+// * Delete method
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+// * Better way of defining a route that does'nt have id's.
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+
+// * Route that has ID's.
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 
 // * 🖨 SERVER REALATED STUFF's
 const port = 3000;
