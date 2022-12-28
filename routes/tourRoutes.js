@@ -5,7 +5,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 const express = require('express');
-const fs = require('fs');
 
 const router = express.Router();
 
