@@ -6,14 +6,25 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 
+// ** Creating a custom middleware in express
+app.use((req, res, next) => {
+  console.log('Middleware calling');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 // * Middleware
 // it will help in modifying the incoming request data.
 app.use(express.json());
 
 // * Creating Route
-// app.get('/', (req, res) => {
-//     res.status(200).send('<h1>Good Evening.</h1>')
-// })
+app.get('/', (req, res) => {
+  res.status(200).send('<h1>Good Evening.</h1>');
+});
 
 // * Using JSON()
 // app.get('/', (req, res) => {
@@ -31,8 +42,11 @@ const tours = JSON.parse(
 );
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
+
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     results: tours.length,
     data: {
       tours,
