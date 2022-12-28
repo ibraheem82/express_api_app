@@ -5,9 +5,20 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+// ! morgan is now deprecated.
+// const morgan = require('morgan');
+// can be use to get the actual request that you are on.
+// get the query of the request using morgan.
+// get every about the request.
 const morgan = require('morgan');
 
+// ** (1) MIDDLEWARES
 // ** Creating a custom middleware in express
+// instead app.use(morgan('dev'));
+// app.use(morgan('tiny'));
+app.use(morgan('combined')); // * <- use
+app.use(express.json());
+
 app.use((req, res, next) => {
   console.log('Middleware calling');
   next();
@@ -20,7 +31,6 @@ app.use((req, res, next) => {
 
 // * Middleware
 // it will help in modifying the incoming request data.
-app.use(express.json());
 
 // * Creating Route
 app.get('/', (req, res) => {
@@ -41,7 +51,7 @@ app.get('/', (req, res) => {
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-
+// ** (2) ROUTE HANDLERS
 const getAllTours = (req, res) => {
   console.log(req.requestTime);
 
@@ -156,6 +166,7 @@ app.get('/api/v1/tours', getAllTours);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
 // * Better way of defining a route that does'nt have id's.
+// ** (3) ROUTES
 app.route('/api/v1/tours').get(getAllTours).post(createTour);
 
 // * Route that has ID's.
@@ -164,6 +175,8 @@ app
   .get(getTour)
   .patch(updateTour)
   .delete(deleteTour);
+
+// ** (4) START SERVER
 
 // * 🖨 SERVER REALATED STUFF's
 const port = 3000;
