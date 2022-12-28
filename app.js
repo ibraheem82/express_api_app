@@ -5,6 +5,7 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
 
 // ** Creating a custom middleware in express
 app.use((req, res, next) => {
