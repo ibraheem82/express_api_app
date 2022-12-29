@@ -5,13 +5,23 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 const express = require('express');
+// all the route handlers was imported here, and all there methods are now avaliable here.
+// You may also use the desctructuring.
+const tourController = require('../controllers/tourControllers');
 
 const router = express.Router();
 
-router.route('/').get(getAllTours).post(createTour);
+router
+  .route('/')
+  .get(tourController.getAllTours)
+  .post(tourController.createTour);
 
 // * Route that has ID's.
 
-router.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+router
+  .route('/:id')
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 
 module.exports = router;
