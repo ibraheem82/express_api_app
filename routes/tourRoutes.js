@@ -11,11 +11,12 @@ const tourController = require('../controllers/tourControllers');
 
 const router = express.Router();
 // params middlewares
+// the checkID function will always where where it suppose to work to validate our data.
 router.param('id', tourController.checkID);
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.createTour);
+  .post(tourController.checkBody, tourController.createTour);
 
 // * Route that has ID's.
 
