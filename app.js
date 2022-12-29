@@ -23,6 +23,8 @@ const userRouter = require('./routes/userRoutes');
 app.use(morgan('combined')); // * <- use
 app.use(express.json());
 
+// * Serving stacic files.
+app.use(express.static(`${__dirname}/public/`));
 app.use((req, res, next) => {
   console.log('Middleware calling');
   next();
