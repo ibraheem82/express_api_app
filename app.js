@@ -20,7 +20,10 @@ const userRouter = require('./routes/userRoutes');
 // ** Creating a custom middleware in express
 // instead app.use(morgan('dev'));
 // app.use(morgan('tiny'));
-app.use(morgan('combined')); // * <- use
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('combined')); // * <- use
+}
 app.use(express.json());
 
 // * Serving stacic files.
