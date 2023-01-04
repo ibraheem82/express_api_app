@@ -10,24 +10,35 @@ const app = require('./app');
 // will be read and saved to the node js environment variable
 dotenv.config({ path: './config.env' });
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
-
+// const DB = process.env.DATABASE.replace(
+//   '<PASSWORD>',
+//   process.env.DATABASE_PASSWORD
+// );
 
 
 
 // * calling the connect method on mongoose.
-mongoose.connect(DB, {
+// ** When using the hosted DATABASE
+// mongoose.connect(DB, {
+//   useNewUrlParser: true,
+//   useCreateIndex: true,
+//   useFindAndModify:false
+// }
+// ).then(con => {
+//   console.log(con.connections);
+//   console.log('DB connection was successfull');
+// })
+
+// ** When using the local DATABASE
+mongoose.connect(process.env.DATABASE_LOCAL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify:false
 }
-).then(con => {
-  console.log(con.connections);
-  console.log('DB connection was successfull');
-})
+).then(() => console.log('DB connection was successfull'));
+
+
+
 // ** IN express
 // console.log(app.get('env'));
 
