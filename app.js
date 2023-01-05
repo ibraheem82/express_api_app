@@ -3,7 +3,6 @@
 /* eslint-disable prefer-object-spread */
 /* eslint-disable import/newline-after-import */
 const express = require('express');
-
 const app = express();
 
 // ! morgan is now deprecated.
