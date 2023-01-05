@@ -16,7 +16,7 @@ const router = express.Router();
 router
   .route('/')
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);
+  .post( tourController.createTour);
 
 // * Route that has ID's.
 
