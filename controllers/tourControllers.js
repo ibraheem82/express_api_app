@@ -93,7 +93,7 @@ exports.createTour = async (req, res) => {
   } catch (err){
     res.status(400).json({
       status: 'fail',
-      message: 'An invalid data was sent ❌'
+      message: err
     });
   }
 };
@@ -111,19 +111,28 @@ exports.updateTour = async (req, res) => {
     },
   });
   } catch (err) {
-    res.status(400).json({
+   res.status(400).json({
       status: 'fail',
-      message: 'An invalid data was sent ❌'
+      message: err
     });
   }
   
 };
 
-exports.deleteTour = (req, res) => {
+exports.deleteTour = async(req, res) => {
   // if (req.params.id * 1 > tours.length) {
-
-  res.status(204).json({
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
     status: 'success',
     data: null,
   });
+  } catch (err) {
+     res.status(400).json({
+      status: 'fail',
+      message: err
+    });
+  }
+
+  
 };
