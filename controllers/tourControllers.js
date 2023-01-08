@@ -36,10 +36,50 @@ const Tour = require("../models/tourModel");
 // };
 exports.getAllTours = async(req, res) => {
   // console.log(req.requestTime);
+  // will give us objects from the query strings.
+  // console.log(req.query);
 
   try {
+
+    // * BUILD QUERY
+    // will take all the fields out of the object
+    const queryObj = {...req.query}
+
+    // ! fields that we want to exclude in the object
+    const excludedFields = ['page', 'sort', 'limit', 'fields']
+    // ! deleting all the objects that was passed which we dont want in the query sting.
+    excludedFields.forEach(el => delete queryObj[el])
+
+  console.log(req.query, queryObj);
+
+
     // Get all tours from the database
-  const tours = await Tour.find();
+    // const tours = await Tour.find();
+
+
+    // make queries in the query string.
+    // filtering the queries.
+    // const tours = await Tour.find(req.query);
+    const query = Tour.find(queryObj);
+
+
+    // ** Filtering obejcts from the database.
+    // writing queries in mongoose.
+  //   const tours = Tour.find({
+  //     duration: 5,
+  //     difficulty: 'easy'
+      
+  // });
+
+    
+    // * EXECUTE QUERY
+  const tours = await(query)
+
+
+
+    // * SEND RESPONSE
+    // * Special mongoose method.
+    // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
   res.status(200).json({
     status: 'success',
     requestedAt: req.requestTime,
