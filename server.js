@@ -3,12 +3,13 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const app = require('./app');
-
 // ** DOTENV in use
 // getting the environment variables.
 // will be read and saved to the node js environment variable
 dotenv.config({ path: './config.env' });
+const app = require('./app');
+
+
 
 // const DB = process.env.DATABASE.replace(
 //   '<PASSWORD>',
