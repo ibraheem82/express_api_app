@@ -69,6 +69,25 @@ class APIFeatures {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     this.query.find(JSON.parse(queryStr));
+
+    // returning the entire objects
+    // in order to return the entire objects that have access to order methods in the class
+    return this;
+  }
+
+  sort() {
+    // ** (2) Sorting
+    if (this.queryString.sort) {
+      // in order to be able to add multiple queries in the params while sorting from the database.
+      const sortBy = this.queryString.sort.split(',').join('');
+      console.log(sortBy);
+
+      this.query = this.query.sort(sortBy);
+    } else {
+      // if the user does not specify how to sort the results.
+      this.query = this.query.sort('-createdAt');
+    }
+    return this;
   }
 }
 
@@ -108,16 +127,16 @@ exports.getAllTours = async (req, res) => {
     // let query = Tour.find(JSON.parse(queryStr));
 
     // ** (2) Sorting
-    if (req.query.sort) {
-      // in order to be able to add multiple queries in the params while sorting from the database.
-      const sortBy = req.query.sort.split(',').join('');
-      console.log(sortBy);
-      // query = query.sort(req.query.sort)
-      query = query.sort(sortBy);
-    } else {
-      // if the user does not specify how to sort the results.
-      query = query.sort('-createdAt');
-    }
+    // if (req.query.sort) {
+    //   in order to be able to add multiple queries in the params while sorting from the database.
+    //   const sortBy = req.query.sort.split(',').join('');
+    //   console.log(sortBy);
+    //   query = query.sort(req.query.sort)
+    //   query = query.sort(sortBy);
+    // } else {
+    //   if the user does not specify how to sort the results.
+    //   query = query.sort('-createdAt');
+    // }
 
     // ** (3) FIELD LIMITING
     if (req.query.fields) {
@@ -149,7 +168,7 @@ exports.getAllTours = async (req, res) => {
     // * EXECUTE QUERY
     // will have access to the method that we are going to define in the class defination.
     // [find()] -> is the query object.
-    const features = new APIFeatures(Tour.find(), req.query).filter();
+    const features = new APIFeatures(Tour.find(), req.query).filter().sort();
     // const tours = await query;
     // the query will be stored here.
     const tours = await features.query;
