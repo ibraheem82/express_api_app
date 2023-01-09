@@ -45,6 +45,33 @@ exports.aliasTopTours = async (req, res, next) => {
   next();
 };
 
+class APIFeatures {
+  // [query] -> mongoose query, we want it to be reusable but not bound to the class.
+  // [queryStr] -> the query that we get from express
+  constructor(query, queryString) {
+    // [this.query] -> is the query that we want to execute.
+    this.query = query; // query that we get as an object.
+    this.queryString = queryString;
+  }
+
+  // *** Method for each of the functionality.
+  filter() {
+    const queryObj = { ...this.queryString };
+
+    // ! fields that we want to exclude in the object
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    // ! deleting all the objects that was passed which we dont want in the query sting.
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    // **  (1B)  ADVANCED FILTERING
+    let queryStr = JSON.stringify(queryObj);
+    // added the mongoose query symbol by replacing where it all match [$]
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+    this.query.find(JSON.parse(queryStr));
+  }
+}
+
 exports.getAllTours = async (req, res) => {
   // console.log(req.requestTime);
   // will give us objects from the query strings.
@@ -55,30 +82,30 @@ exports.getAllTours = async (req, res) => {
 
     // *  (1A) BUILD QUERY
     // will take all the fields out of the object
-    const queryObj = { ...req.query };
+    // const queryObj = { ...req.query };
 
     // ! fields that we want to exclude in the object
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    // const excludedFields = ['page', 'sort', 'limit', 'fields'];
     // ! deleting all the objects that was passed which we dont want in the query sting.
-    excludedFields.forEach((el) => delete queryObj[el]);
+    // excludedFields.forEach((el) => delete queryObj[el]);
 
-    console.log(req.query, queryObj);
+    // console.log(req.query, queryObj);
 
     // Get all tours from the database
     // const tours = await Tour.find();
 
     // **  (1B)  ADVANCED FILTERING
-    let queryStr = JSON.stringify(queryObj);
+    // let queryStr = JSON.stringify(queryObj);
     // added the mongoose query symbol by replacing where it all match [$]
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    console.log(JSON.parse(queryStr));
+    // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // console.log(JSON.parse(queryStr));
 
     // make queries in the query string.
     // filtering the queries.
     // const tours = await Tour.find(req.query);
     // const query = Tour.find(queryObj);
     // will return a query
-    let query = Tour.find(JSON.parse(queryStr));
+    // let query = Tour.find(JSON.parse(queryStr));
 
     // ** (2) Sorting
     if (req.query.sort) {
@@ -120,7 +147,12 @@ exports.getAllTours = async (req, res) => {
     }
 
     // * EXECUTE QUERY
-    const tours = await query;
+    // will have access to the method that we are going to define in the class defination.
+    // [find()] -> is the query object.
+    const features = new APIFeatures(Tour.find(), req.query).filter();
+    // const tours = await query;
+    // the query will be stored here.
+    const tours = await features.query;
 
     // ** Filtering objects from the database method 2.
     // writing queries in mongoose.
