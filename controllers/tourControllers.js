@@ -43,7 +43,7 @@ exports.getAllTours = async(req, res) => {
 
     console.log(req.query);
 
-    // * BUILD QUERY
+    // *  (1A) BUILD QUERY
     // will take all the fields out of the object
     const queryObj = {...req.query}
 
@@ -60,7 +60,7 @@ exports.getAllTours = async(req, res) => {
 
 
 
-    // ** ADVANCED FILTERING
+    // **  (1B)  ADVANCED FILTERING
     let queryStr = JSON.stringify(queryObj);
     // added the mongoose query symbol by replacing where it all match [$]
    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
@@ -75,7 +75,7 @@ exports.getAllTours = async(req, res) => {
 
 
  
-    // (3) Sorting
+    // ** (2) Sorting
     if (req.query.sort) {
       // in order to be able to add multiple queries in the params while sorting from the database.
       const sortBy = req.query.sort.split(',').join('');
@@ -87,13 +87,25 @@ exports.getAllTours = async(req, res) => {
       query = query.sort('-createdAt');
     }
 
+    // ** (3)  FIELD LIMITING
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join('');
+      query = query.select(fields)
+    } else {
+      // ('-__v) will not be included in the response not including
+      query = query.select('-__v')
+    }
     
+
+
+
+
     // * EXECUTE QUERY
   const tours = await(query)
 
 
 
-    
+     
        // ** Filtering objects from the database method 2.
     // writing queries in mongoose.
   //   const tours = Tour.find({
