@@ -70,10 +70,22 @@ exports.getAllTours = async(req, res) => {
     // filtering the queries.
     // const tours = await Tour.find(req.query);
     // const query = Tour.find(queryObj);
-    const query = Tour.find(JSON.parse(queryStr));
+    // will return a query
+    let query = Tour.find(JSON.parse(queryStr));
 
 
  
+    // (3) Sorting
+    if (req.query.sort) {
+      // in order to be able to add multiple queries in the params while sorting from the database.
+      const sortBy = req.query.sort.split(',').join('');
+      console.log(sortBy);
+      // query = query.sort(req.query.sort)
+      query = query.sort(sortBy)
+    } else {
+      // if the user does not specify how to sort the results.
+      query = query.sort('-createdAt');
+    }
 
     
     // * EXECUTE QUERY
