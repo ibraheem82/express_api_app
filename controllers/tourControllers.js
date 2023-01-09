@@ -1,11 +1,10 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable lines-between-class-members */
 /* eslint-disable prettier/prettier */
-/* eslint-disable prefer-object-spread */
-/* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
-/* eslint-disable prettier/prettier */
+
 // const fs = require('fs');
 const Tour = require('../models/tourModel');
+const APIFeatures = require('../utils/apiFeatures');
 
 // const tours = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
@@ -39,70 +38,14 @@ const Tour = require('../models/tourModel');
 // * will get the first 5 cheap tours
 // will prefilled the query obeject before getAllTours()
 // we are prefilling the query object for the users
-exports.aliasTopTours = async (req, res, next) => {
+exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
   next();
 };
 
-class APIFeatures {
-  // [query] -> mongoose query, we want it to be reusable but not bound to the class.
-  // [queryStr] -> the query that we get from express
-  constructor(query, queryString) {
-    // [this.query] -> is the query that we want to execute.
-    this.query = query; // query that we get as an object.
-    this.queryString = queryString;
-  }
 
-  // *** Method for each of the functionality.
-  filter() {
-    const queryObj = { ...this.queryString };
-
-    // ! fields that we want to exclude in the object
-    const excludedFields = ['page', 'sort', 'limit', 'fields'];
-    // ! deleting all the objects that was passed which we dont want in the query sting.
-    excludedFields.forEach((el) => delete queryObj[el]);
-
-    // **  (1B)  ADVANCED FILTERING
-    let queryStr = JSON.stringify(queryObj);
-    // added the mongoose query symbol by replacing where it all match [$]
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-    this.query.find(JSON.parse(queryStr));
-
-    // returning the entire objects
-    // in order to return the entire objects that have access to order methods in the class
-    return this;
-  }
-
-  sort() {
-    // ** (2) Sorting
-    if (this.queryString.sort) {
-      // in order to be able to add multiple queries in the params while sorting from the database.
-      const sortBy = this.queryString.sort.split(',').join('');
-      console.log(sortBy);
-
-      this.query = this.query.sort(sortBy);
-    } else {
-      // if the user does not specify how to sort the results.
-      this.query = this.query.sort('-createdAt');
-    }
-    return this;
-  }
-  limitFields() {
-    if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join('');
-
-      this.query = this.query.select(fields);
-    } else {
-      // ('-__v) will not be included in the response not including
-      this.query = this.query.select('-__v');
-    }
-
-    return this;
-  }
-}
 
 exports.getAllTours = async (req, res) => {
   // console.log(req.requestTime);
@@ -110,7 +53,6 @@ exports.getAllTours = async (req, res) => {
   // console.log(req.query);
 
   try {
-    console.log(req.query);
 
     // *  (1A) BUILD QUERY
     // will take all the fields out of the object
@@ -161,29 +103,32 @@ exports.getAllTours = async (req, res) => {
     // }
 
     // ** (4)  PAGINATION
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit; // 3 - 1 * 10
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit; // 3 - 1 * 10
     // page=2&limit=10
     // ! [skip] -> the amount of results  that should be skipped before actually queriying the data
     // ! [limit] -> the amount of results that we want in the query.
     // skip 10 results before we actually start querying.
     // 1-10 -> [page 1], 11-20 -> [page 2], 21-30 -> [page 3]
     // query = query.skip(2).limit(10)
-    query = query.skip(skip).limit(limit);
+    // query = query.skip(skip).limit(limit);
 
-    if (req.query.page) {
-      // [countDocuments] will return the numbers of documnets.
-      const numberOfTours = await Tour.countDocuments();
-      if (skip >= numberOfTours) throw new Error('This page does not exist ❌');
-    }
+    // if (req.query.page) {
+    // [countDocuments] will return the numbers of documnets.
+    //   const numberOfTours = await Tour.countDocuments();
+    //   if (skip >= numberOfTours) throw new Error('This page does not exist ❌');
+    // }
 
     // * EXECUTE QUERY
     // will have access to the method that we are going to define in the class defination.
     // [find()] -> is the query object.
-    const features = new APIFeatures(Tour.find(), req.query).filter().sort();
+    // [this] have access to each of these methods.
+    // 
+    const features = new APIFeatures(Tour.find(), req.query).filter().sort().limitFields().paginate();
     // const tours = await query;
     // the query will be stored here.
+    // will come back with all the objects that was selected.
     const tours = await features.query;
 
     // ** Filtering objects from the database method 2.
@@ -197,7 +142,7 @@ exports.getAllTours = async (req, res) => {
     // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
     res.status(200).json({
       status: 'success',
-      requestedAt: req.requestTime,
+      // requestedAt: req.requestTime,
       results: tours.length,
       data: {
         tours,
