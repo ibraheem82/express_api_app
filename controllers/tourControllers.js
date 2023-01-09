@@ -41,6 +41,8 @@ exports.getAllTours = async(req, res) => {
 
   try {
 
+    console.log(req.query);
+
     // * BUILD QUERY
     // will take all the fields out of the object
     const queryObj = {...req.query}
@@ -57,19 +59,21 @@ exports.getAllTours = async(req, res) => {
     // const tours = await Tour.find();
 
 
+
+    // ** ADVANCED FILTERING
+    let queryStr = JSON.stringify(queryObj);
+    // added the mongoose query symbol by replacing where it all match [$]
+   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
+    console.log(JSON.parse(queryStr));
+
     // make queries in the query string.
     // filtering the queries.
     // const tours = await Tour.find(req.query);
-    const query = Tour.find(queryObj);
+    // const query = Tour.find(queryObj);
+    const query = Tour.find(JSON.parse(queryStr));
 
 
-    // ** Filtering obejcts from the database.
-    // writing queries in mongoose.
-  //   const tours = Tour.find({
-  //     duration: 5,
-  //     difficulty: 'easy'
-      
-  // });
+ 
 
     
     // * EXECUTE QUERY
@@ -77,6 +81,13 @@ exports.getAllTours = async(req, res) => {
 
 
 
+    
+       // ** Filtering objects from the database method 2.
+    // writing queries in mongoose.
+  //   const tours = Tour.find({
+  //     duration: 5,
+  //     difficulty: 'easy'
+  // });
     // * SEND RESPONSE
     // * Special mongoose method.
     // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy')
