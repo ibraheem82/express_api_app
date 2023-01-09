@@ -87,7 +87,7 @@ exports.getAllTours = async(req, res) => {
       query = query.sort('-createdAt');
     }
 
-    // ** (3)  FIELD LIMITING
+    // ** (3) FIELD LIMITING
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join('');
       query = query.select(fields)
@@ -97,8 +97,24 @@ exports.getAllTours = async(req, res) => {
     }
     
 
+        // ** (4)  PAGINATION
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit; // 3 - 1 * 10
+        // page=2&limit=10
+        // ! [skip] -> the amount of results  that should be skipped before actually queriying the data
+        // ! [limit] -> the amount of results that we want in the query.
+        // skip 10 results before we actually start querying.
+        // 1-10 -> [page 1], 11-20 -> [page 2], 21-30 -> [page 3]
+      // query = query.skip(2).limit(10)
+      query = query.skip(skip).limit(limit)
 
+    if (req.query.page) {
+      // [countDocuments] will return the numbers of documnets.
+      const numberOfTours = await Tour.countDocuments()
+      if (skip >= numberOfTours) throw new Error('This page does not exist ❌');
 
+    }
 
     // * EXECUTE QUERY
   const tours = await(query)
