@@ -65,7 +65,17 @@ const tourSchema = new mongoose.Schema({
 
   startDates: [Date]
  
+}, {
+  toJSON: {virtuals: true},
+  toObject: { virtuals: true}
 });
+
+// Virtual propertise
+// [.get()] -> will be created each time we get data from the database
+// will not be presisted to the database.
+tourSchema.virtual('durationWeeks').get(function () {
+  return this.duration / 7;
+})
 
 const Tour = mongoose.model('Tour', tourSchema);
 
