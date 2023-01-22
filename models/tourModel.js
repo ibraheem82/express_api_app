@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 // ** Describing the schema definition.
 const tourSchema = new mongoose.Schema({
@@ -8,6 +9,9 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a name.'],
     unique: true,
     trim:true
+  },
+  slug: {
+   type: String
   },
   duration:{
   type: Number,
@@ -63,7 +67,12 @@ const tourSchema = new mongoose.Schema({
     select: false
   },
 
-  startDates: [Date]
+  startDates: [Date],
+
+  secretTour: {
+    type: Boolean,
+    default: false
+  }
  
 }, {
   toJSON: {virtuals: true},
@@ -79,11 +88,40 @@ tourSchema.virtual('durationWeeks').get(function () {
 
 
 // * Document Middleware
+// * [Hook] -> ('save')
+// * Middleware is function that is defined on the tourSchema.pre, document middleware.
+// * Pre->save hook or pre->save middleware
 // it runs before the .save() and .create() but not on insertMany
-tourSchema.pre('save', function () {
+tourSchema.pre('save', function (next) {
   console.log(this)
-})
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
 
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+
+// ** QUERY MIDDLEWARE
+// [find] will make it a query
+// * will execute for the commands that starts with find.
+// tourSchema.pre('find', function(next) {
+tourSchema.pre(/^find/, function(next) {
+  // query object
+  // ? fid where the secretTour is not equal to true.
+  this.find({ secretTour: { $ne: true } });
+  next();
+});
+
+
+// tourSchema.pre('findOne', function(next) {
+  // query object
+  // ? find where the secretTour is not equal to true.
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
