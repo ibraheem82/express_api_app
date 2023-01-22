@@ -46,7 +46,7 @@ const tourSchema = new mongoose.Schema({
 
   description: {
     type: String,
-    required: [true, 'A tour must have a description'],
+    // required: [true, 'A tour must have a description'],
     time: true
   },
 
@@ -75,6 +75,13 @@ const tourSchema = new mongoose.Schema({
 // will not be presisted to the database.
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+
+// * Document Middleware
+// it runs before the .save() and .create() but not on insertMany
+tourSchema.pre('save', function () {
+  console.log(this)
 })
 
 const Tour = mongoose.model('Tour', tourSchema);
