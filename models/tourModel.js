@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 
@@ -92,36 +93,28 @@ tourSchema.virtual('durationWeeks').get(function () {
 // * Middleware is function that is defined on the tourSchema.pre, document middleware.
 // * Pre->save hook or pre->save middleware
 // it runs before the .save() and .create() but not on insertMany
-tourSchema.pre('save', function (next) {
+tourSchema.pre('save', function(next) {
   console.log(this)
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
-
-// tourSchema.post('save', function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
-
 // ** QUERY MIDDLEWARE
 // [find] will make it a query
 // * will execute for the commands that starts with find.
-// tourSchema.pre('find', function(next) {
 tourSchema.pre(/^find/, function(next) {
   // query object
-  // ? fid where the secretTour is not equal to true.
+  // ? find where the secretTour is not equal to true.
   this.find({ secretTour: { $ne: true } });
+  this.start = Date.now();
   next();
 });
 
-
-// tourSchema.pre('findOne', function(next) {
-  // query object
-  // ? find where the secretTour is not equal to true.
-//   this.find({ secretTour: { $ne: true } });
-//   next();
-// });
+tourSchema.post(/^find/, function(docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+  console.log(docs);
+  next();
+});
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
