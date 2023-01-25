@@ -2,6 +2,7 @@
 /* eslint-disable prettier/prettier */
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+const validator = require('validator');
 
 // ** Describing the schema definition.
 const tourSchema = new mongoose.Schema({
@@ -11,7 +12,9 @@ const tourSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     maxlength: [40, 'A tour must have less or equal than 40 characters.'],
-    minlength: [ 9, 'A tour must have more or less than 9 characters.']
+    minlength: [9, 'A tour must have more or less than 9 characters.'],
+// * should contain alphabelts
+    validate: [validator.isAlpha, 'Tour name must only contains characters']
   },
   slug: {
    type: String
