@@ -9,6 +9,8 @@ class AppError extends Error {
 
     this.statusCode = statusCode;
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error'; 
+    // all the errors that we create will basically be operational errors.
+    // using the operationa TO SEND DOWN message to the client at least in production.
     this.isOperation = true;
 
 
