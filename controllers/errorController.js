@@ -1,13 +1,32 @@
 /* eslint-disable prettier/prettier */
 
+/* eslint-disable prettier/prettier */
+const AppError = require("../utils/appError");
+
+const handleCastErrorDB = err => {
+  // returning our own app error.
+  const message = `Invalid  ${err.path} is passed in: ${err.value}.`;
+  // doing this with the help of operational error.
+  return new AppError(message, 400);
+};
+
+const handleDuplicateFieldNameErrorDb = err => {
+  // returning our own app error.
+  const message = ` Duplicate data entries at : ${err.keyValue.name}: ${err.code}.`;
+  // doing this with the help of operational error.
+  return new AppError(message, 409);
+};
+
+
 const sendErrorDev = (err, res) => {
- res.status(err.statusCode).json({
-      status: err.status,
-      error: err,
-      message: err.message,
-      stack: err.stack
-    });
-}
+  res.status(err.statusCode).json({
+    status: err.status,
+    error: err,
+    message: err.message,
+    stack: err.stack
+  });
+  
+};
 
 
 const sendErrorProd = (err, res) => {
@@ -15,7 +34,7 @@ const sendErrorProd = (err, res) => {
   if (err.isOperational) {
     res.status(err.statusCode).json({
           status: err.status,
-          message: err.message,
+          message: err.message
      });
 
     // Programming Error, : Or other unknown error that we dont want to leak the details  out.
@@ -23,6 +42,7 @@ const sendErrorProd = (err, res) => {
     // ** Procedures on error
     // 1) Log error
     console.error("Error❌", err)
+    // console.log(err);
 
 
 
@@ -30,7 +50,7 @@ const sendErrorProd = (err, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Something went very wrong!'
-    })
+    });
   }
 }
 
@@ -44,9 +64,14 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProd(err, res);
-  
+    let error = {...err};
+    //[handleCastErrorDB(err)] ->  passing the error that mongoose created into the function, will also return a new error created with our (AppError) class and that error will be marked as an operational error, beacuse all our AppError have the isOperational property set to true automatically.
+    if (error.kind === 'ObjectId') error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateFieldNameErrorDb(error);
+    // if (error.name === 'CastError') error = handleCastErrorDB(error);
+    // will be sent to the client
+    // handleCastErrorDB -> will be sent to the client.
+    sendErrorProd(error, res);
   }
-  
 };
  
