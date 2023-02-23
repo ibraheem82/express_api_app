@@ -11,8 +11,8 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'A tour must have a name.'],
     unique: true,
     trim: true,
-    maxlength: [40, 'A tour must have less or equal than 40 characters.'],
-    minlength: [9, 'A tour must have more or less than 9 characters.']
+    maxlength: [40, 'A tour name must have less or equal than 40 characters.'],
+    minlength: [9, 'A tour name must have more or less than 9 characters.']
 // * should contain alphabelts
     // validate: [validator.isAlpha, 'Tour name must only contains characters']
   },
@@ -39,15 +39,14 @@ const tourSchema = new mongoose.Schema({
   ratingsAverage: {
     type: Number,
     default: 4.5,
-    // the {min} and {max} can also work date.
+    // the {min} and {max} can also work on date.
     min: [1, 'Rating must be above 1.0'],
-    max:[5, 'Rating must be below 5.0'],
-
+    max: [5, 'Rating must be below 5.0']
   },
 
   ratingsQuantity: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
   price: {
