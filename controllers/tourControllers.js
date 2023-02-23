@@ -160,8 +160,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
   // console.log(req.params);
   // const id = req.params.id * 1;
   // const tour = tours.find((el) => el.id === id);
-
+  // const { id } = req.params;
+//   const id = (req.params.id).trim();
+// const tour =  await findById({_id:new mongodb.ObjectId(id)});
     const tour = await Tour.findById(req.params.id);
+    // const tour = await Tour.findById(id.trim());
+
 
 
 
@@ -195,7 +199,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
 
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      runValidator: true,
+      runValidators: true,
     });
   
    if (!tour) {
