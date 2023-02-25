@@ -74,8 +74,6 @@ process.on('unhandledRejection', err => {
   })
 });
 
-console.log(y);
-
 
 // ** When using the local DATABASE
 mongoose.set("strictQuery", false);
