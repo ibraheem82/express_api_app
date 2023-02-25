@@ -9,7 +9,7 @@ const { MongoError } = require('mongodb');
 // will be read and saved to the node js environment variable
 dotenv.config({ path: './config.env' });
 
-
+// * it will catch the all across our entire application. 
 process.on('uncaughtException', (err) => {
     console.log('UNCAUGHT EXCEPTION 💥💥💥! Server shutting down...')
     console.log(err.name, err.message)
@@ -29,25 +29,25 @@ const DB = process.env.DATABASE.replace(
 
 // * calling the connect method on mongoose.
 // ** When using the hosted DATABASE
-mongoose.set("strictQuery", false);
-mongoose.connect(DB, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-  useUnifiedTopology: true,
-}
-).then(con => {
+// mongoose.set("strictQuery", false);
+// mongoose.connect(DB, {
+//   useNewUrlParser: true,
+//   useCreateIndex: true,
+//   useFindAndModify: false,
+//   useUnifiedTopology: true,
+// }
+// ).then(con => {
   // console.log(con.connections);
-  console.log('DB connection was successfull');
-}).catch((err) => {
-  if (err instanceof MongoError && err.code === 8000) {
-    console.log('Authentication failed. Please check your credentials.');
-  } else if (err.codeName === 'AtlasError') {
-    console.log('An error occurred with Atlas:', err);
-  } else {
-    console.log('Failed to connect to MongoDB server:', err);
-  }
-});
+  // console.log('DB connection was successfull');
+// }).catch((err) => {
+//   if (err instanceof MongoError && err.code === 8000) {
+//     console.log('Authentication failed. Please check your credentials.');
+//   } else if (err.codeName === 'AtlasError') {
+//     console.log('An error occurred with Atlas:', err);
+//   } else {
+//     console.log('Failed to connect to MongoDB server:', err);
+//   }
+// });
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
@@ -78,15 +78,13 @@ console.log(y);
 
 
 // ** When using the local DATABASE
-// mongoose.set("strictQuery", false);
-// mongoose.connect(process.env.DATABASE_LOCAL, {
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useFindAndModify: false,
-//   useUnifiedTopology: true,
-  
-// }
-// ).then(() => console.log('DB connection was successfull'));
+mongoose.set("strictQuery", false);
+mongoose.connect(process.env.DATABASE_LOCAL, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+}).then(() => console.log('DB connection was successfull'));
 
 
 
