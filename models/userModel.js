@@ -23,7 +23,10 @@ const userSchema = new mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    required: [true, 'Please confirm your password'],
+    required: [true, 'Please confirm your password']
   }
-
 })
+
+// ['User'] -> is the name of the model that we are creating.
+const User = mongoose.model('User', userSchema);
+module.exports = User;
