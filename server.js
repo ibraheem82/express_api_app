@@ -8,6 +8,15 @@ const { MongoError } = require('mongodb');
 // getting the environment variables.
 // will be read and saved to the node js environment variable
 dotenv.config({ path: './config.env' });
+
+
+process.on('uncaughtException', (err) => {
+    console.log('UNCAUGHT EXCEPTION 💥💥💥! Server shutting down...')
+    console.log(err.name, err.message)
+    process.exit(1);
+});
+
+
 const app = require('./app');
 
 
@@ -65,16 +74,6 @@ process.on('unhandledRejection', err => {
   })
 });
 
-
-
-process.on('uncaughtException', (err) => {
-
-    console.log('UNCAUGHT EXCEPTION 💥💥💥! Server shutting down...')
-    console.log(err.name, err.message)
-  server.close(() => {
-    process.exit(1);
-  });
-});
 console.log(y);
 
 
