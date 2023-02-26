@@ -39,7 +39,8 @@ const userSchema = new mongoose.Schema({
         return el === this.password;
       },
       message: 'password are not the same.'
-    }
+    },
+    select: false
   }
 });
 // the middleware will work the moment the data is received and the moment it is presisted to the database.
@@ -57,6 +58,17 @@ userSchema.pre('save', async function(next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+// ** Instance method
+// will be available on all the documents of a certain selection.
+// [candidatePassword] -> the password that user passes in the body.
+// [candidatePassword] -> is not hashed, it is coming from the user.
+// [userPassword] -> it is hashed
+
+// will return true if the two password are the same after comparing it.
+userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 // ['User'] -> is the name of the model that we are creating.
 const User = mongoose.model('User', userSchema);
