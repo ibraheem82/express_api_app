@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, 'Please provide a password.'],
-    minlength: 7
+    minlength: 7,
+    select: false
   },
 
   // check if the passwordConfirm matches the password.
