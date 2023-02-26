@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
@@ -67,12 +68,15 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
-  console.log(token)
+
 
   if (!token) {
     return next(new AppError('You are not logged in! please log in to get access.', 401));
   }
   // * 2) Validate token -> (verification token)
+  // the decoded payload or data from the json web token.
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  console.log(decoded)
   
   // * 3) Check if the user that is trying to access the route still exists.
 
