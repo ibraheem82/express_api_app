@@ -61,6 +61,23 @@ exports.login = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.protect = catchAsync((req, res, next) => {
+exports.protect = catchAsync(async (req, res, next) => {
+  // * 1) Getting the token and check if it there.
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  console.log(token)
+
+  if (!token) {
+    return next(new AppError('You are not logged in! please log in to get access.', 401));
+  }
+  // * 2) Validate token -> (verification token)
+  
+  // * 3) Check if the user that is trying to access the route still exists.
+
+  // * 4) Check if the user changed the password after the JWT(token) was issued.
+
+
   next();
 });
