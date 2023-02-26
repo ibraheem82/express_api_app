@@ -8,7 +8,7 @@ const express = require('express');
 // all the route handlers was imported here, and all there methods are now avaliable here.
 // You may also use the desctructuring.
 const tourController = require('../controllers/tourControllers');
-
+const authController = require('../controllers/authControllers'); 
 const router = express.Router();
 // params middlewares
 // the checkID function will always where where it suppose to work to validate our data.
@@ -25,7 +25,7 @@ router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
 router
   .route('/')
-  .get(tourController.getAllTours)
+  .get(authController.protect, tourController.getAllTours)
   .post(tourController.createTour);
 
 // * Route that has ID's.
