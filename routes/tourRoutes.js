@@ -8,7 +8,8 @@ const express = require('express');
 // all the route handlers was imported here, and all there methods are now avaliable here.
 // You may also use the desctructuring.
 const tourController = require('../controllers/tourControllers');
-const authController = require('../controllers/authController'); 
+const authController = require('../controllers/authController');
+ 
 const router = express.Router();
 // params middlewares
 // the checkID function will always where where it suppose to work to validate our data.
