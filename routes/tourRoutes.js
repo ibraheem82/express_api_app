@@ -9,7 +9,7 @@ const express = require('express');
 // You may also use the desctructuring.
 const tourController = require('../controllers/tourControllers');
 const authController = require('../controllers/authController');
- 
+
 const router = express.Router();
 // params middlewares
 // the checkID function will always where where it suppose to work to validate our data.
@@ -21,8 +21,14 @@ router
   .get(tourController.aliasTopTours, tourController.getAllTours);
 
 
-router.route('/tour-stats').get(tourController.getTourStats);
-router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
+router
+  .route('/tour-stats')
+  .get(tourController.getTourStats);
+
+
+router
+  .route('/monthly-plan/:year')
+  .get(tourController.getMonthlyPlan);
 
 router
   .route('/')
