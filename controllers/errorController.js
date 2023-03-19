@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 /* eslint-disable prettier/prettier */
+const mongoose = require('mongoose')
 const AppError = require("../utils/appError");
 
 const handleCastErrorDB = err => {
@@ -14,17 +15,29 @@ const handleDuplicateFieldNameErrorDb = err => {
   
   // returning our own app error.
   // const checkValue = err.keyValue.name.match(/(["'])(\\?.)*?\1/);
-  const message = ` Duplicate fieldvalue: \"${err.keyValue.name}"\ please use another value.`;
+  const message = ` Duplicate fieldvalue: "${err.keyValue.name}" please use another value.`;
   
   // doing this with the help of operational error.
   return new AppError(message, 400);
 };
 
+// const handleValidationErrorDB = err => {
+//   // const errors  = Object.values(err.errors).map(el = el.statusCode)
+//   // const message = `Invalid input data. ${errors.join('. ')}`;
+//   const message = `Invalid input value ❌❌. ${Object.values(err.errors)}`;
+//   return new AppError(message, 400);
+// }
+
 const handleValidationErrorDB = err => {
-  // const errors  = Object.values(err.errors).map(el = el.statusCode)
-  // const message = `Invalid input data. ${errors.join('. ')}`;
-  const message = `Invalid input value ❌❌. ${Object.values(err.errors)}`;
+  const errors = Object.values(err.errors).map(error => error.message);
+  const message = `Invalid input value ❌❌. ${errors.join('. ')}`;
   return new AppError(message, 400);
+}
+
+const handleJWTError = err => { 
+  const message = `${err.name}`
+ 
+  return new AppError(message, 401);
 }
 
 const sendErrorDev = (err, res) => {
@@ -46,7 +59,6 @@ const sendErrorProd = (err, res) => {
             status: err.status,
             message: err.message,
             // stack: err.stack
-            
      });
 
     // Programming Error, : Or other unknown error that we dont want to leak the details  out.
@@ -84,8 +96,8 @@ module.exports = (err, req, res, next) => {
     if (error.kind === 'ObjectId') error = handleCastErrorDB(error);
       // if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldNameErrorDb(error);
-    if ('[Symbol(mongoose:validatorError)]: true') error = handleValidationErrorDB(error);
-    
+    if (error instanceof mongoose.Error.ValidationError) error = handleValidationErrorDB(error);
+      if (error.name === 'JsonWebTokenError') error = handleJWTError(error);
     // will be sent to the client
     // handleCastErrorDB -> will be sent to the client.
     sendErrorProd(error, res);
