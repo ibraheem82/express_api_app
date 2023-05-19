@@ -3,7 +3,8 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { MongoError } = require('mongodb');
+// eslint-disable-next-line import/no-extraneous-dependencies, node/no-extraneous-require
+// const { MongoError } = require('mongodb');
 // ** DOTENV in use
 // getting the environment variables.
 // will be read and saved to the node js environment variable
@@ -20,10 +21,10 @@ process.on('uncaughtException', (err) => {
 const app = require('./app');
 
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
-  process.env.DATABASE_PASSWORD
-);
+// const DB = process.env.DATABASE.replace(
+//   '<PASSWORD>',
+//   process.env.DATABASE_PASSWORD
+// );
 
 
 
@@ -106,9 +107,6 @@ mongoose.connect(process.env.DATABASE_LOCAL, {
 //     return;
 //   }
 //   console.log('Connected successfully to MongoDB server');
-
-//   // continue with your MongoDB operations here
-//   // ...
 
 //   client.close();
 
