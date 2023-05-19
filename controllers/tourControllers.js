@@ -212,7 +212,6 @@ exports.updateTour = catchAsync(async (req, res, next) => {
         tour,
       },
     });
- 
 });
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
@@ -319,4 +318,4 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         plan
       },
     });
-});
+})
